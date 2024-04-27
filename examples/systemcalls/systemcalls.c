@@ -1,5 +1,7 @@
 #include "systemcalls.h"
-
+bool is_absolute_path(const char *path) {
+    return (path != NULL && *path == '/');
+}
 /**
  * @param cmd the command to execute with system()
  * @return true if the command in @param cmd was executed
@@ -10,6 +12,18 @@
 bool do_system(const char *cmd)
 {
 
+int ret;
+
+ret=system(cmd);
+if( ret == 0)
+{
+    printf("Command executed successfully.\n");
+    return  true;
+}
+else{
+    printf("Command failed to execute or returned a non-zero exit status.\n");
+    return false;
+}
 /*
  * TODO  add your code here
  *  Call the system() function with the command set in the cmd
@@ -43,11 +57,46 @@ bool do_exec(int count, ...)
     for(i=0; i<count; i++)
     {
         command[i] = va_arg(args, char *);
+        
     }
+    if (!is_absolute_path(command[0])) {
+        fprintf(stderr, "Error: Command must be specified with an absolute path.\n");
+        return false;
+    }
+    if (strcmp(command[1], "-f") == 0) {
+        if (!is_absolute_path(command[2])){
+            fprintf(stderr, "Error: Second argument must be \"-f\".\n");
+        return false;
+
+        }
+    }
+        
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
     command[count] = command[count];
+
+pid_t pid;
+ 
+ pid=fork();
+
+ if(pid==-1)
+     return false;
+ else if(pid ==0)
+ {
+    int ret =execv(command[0],command);
+    if(ret==-1){
+        perror("execv");
+         return false;
+        
+    }
+
+ }  
+if(waitpid(pid,NULL,0) ==-1)
+{
+    return false;
+}
+
 
 /*
  * TODO:
@@ -84,7 +133,37 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
     // and may be removed
     command[count] = command[count];
 
+    pid_t dpid;
+    int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+    if (fd < 0)
+     { perror("open"); 
+     return false;
+      }
 
+      dpid=fork();
+      if(dpid ==-1)
+      {
+        perror("fork");
+        return false;
+      }
+      else if(dpid==0){
+        if(dup2(fd,1)<0)
+        {
+            perror("fork");
+            return false;
+        }
+        int ret_1 =execv(command[0],command);
+    if(ret_1==-1){
+        perror("execv");
+        return false;
+        
+    }
+
+ }  
+if(waitpid(dpid,NULL,0) ==-1)
+{
+    return false;
+}
 /*
  * TODO
  *   Call execv, but first using https://stackoverflow.com/a/13784315/1446624 as a refernce,
@@ -94,6 +173,6 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
 */
 
     va_end(args);
-
+close(fd);
     return true;
 }
