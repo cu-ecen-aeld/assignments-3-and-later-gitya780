@@ -103,7 +103,7 @@ mkdir -p "${OUTDIR}/rootfs/home"
 cp ~/ucb/finder-app/writer "$OUTDIR"/rootfs/home
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
-cd ~/home/ucb/finder-app
+cd ~/ucb/finder-app
 cp -r writer finder.sh finder-test.sh autorun-qemu.sh "${OUTDIR}/rootfs/home"
 sudo chmod 755 ${OUTDIR}/rootfs/home/{finder.sh,finder-test.sh,autorun-qemu.sh}
 cd conf
