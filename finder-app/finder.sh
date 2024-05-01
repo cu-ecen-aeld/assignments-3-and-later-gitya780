@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 if [[ -z "$1" || -z "$2" ]]; then
     echo "Error 1: Please enter the first argument as a valid file directory"
     echo "Error 2: Please enter the second argument as the string you want to find"

@@ -43,7 +43,7 @@ syslog(LOG_DEBUG,"Writing %s to solution.txt",argv[2]);
 }
 if(close(fd)== -1)
 {
-  perror("close");
+  //perror("close");
    syslog(LOG_ERR,"ERROR in closing the file");
    return 1;
 }
