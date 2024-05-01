@@ -99,11 +99,17 @@ cd "$OUTDIR/rootfs"
 sudo mknod -m 666 dev/null c 1 3
 sudo mknod -m 600 dev/console c 5 1
 # TODO: Clean and build the writer utility
-mkdir -p "${OUTDIR}/rootfs/home"
-cp ~/ucb/finder-app/writer "$OUTDIR"/rootfs/home
+cd "${FINDER_APP_DIR}"
+make clean
+if [ -f "writer" ]
+then
+	rm writer
+fi
+${CROSS_COMPILE}gcc writer.c -o writer
+make CROSS_COMPILE=${CROSS_COMPILE}
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
-cd ~/ucb/finder-app
+cd "${FINDER_APP_DIR}"
 cp -r writer finder.sh finder-test.sh autorun-qemu.sh "${OUTDIR}/rootfs/home"
 sudo chmod 755 ${OUTDIR}/rootfs/home/{finder.sh,finder-test.sh,autorun-qemu.sh}
 cd conf
