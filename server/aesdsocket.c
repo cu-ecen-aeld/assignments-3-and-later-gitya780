@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include<fcntl.h>
 
-int sockfd,fd;
+int sockfd;
 #define PORT "9000" // the port user will be connecting to
 
 #define BACKLOG 10 //how many pending connections queue will hold
@@ -62,12 +62,7 @@ int main(int argc,char*argv[])
     sigaction(SIGTERM,&sa,NULL);
     
      
-     if(fd == -1)
-    {
-        syslog(LOG_ERR,"ERROR while opening the file");
-        exit(EXIT_FAILURE);
- 
-    } 
+    
 
     memset(&hints,0,sizeof(hints));
     hints.ai_family = AF_INET; // use IPv4 or IPv6, whichever
@@ -130,7 +125,7 @@ while ((numbytes = recv(new_fd, &single_char, 1, 0)) > 0) {
     while ((numbytes = fread(buffer, 1,BUF_SIZE, data_file)) > 0) {
         send(new_fd, buffer,numbytes, 0);
     }
-        close(fd);
+        
         syslog(LOG_INFO, "Closed connection from %s\n", s);
         close(new_fd);
     }
